@@ -10,6 +10,10 @@
     {
       "src": "/api/(.*)",
       "dest": "api/cadastro.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.html"
     }
   ]
 }
