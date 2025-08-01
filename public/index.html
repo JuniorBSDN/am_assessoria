@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário de Benefício</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff8dc;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background-color: #fff9e6;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 0 10px #e0c96b;
+    }
+
+    h2 {
+      text-align: center;
+      color: #c48f00;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      color: #333;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-top: 0.2rem;
+    }
+
+    button {
+      background-color: #ffd700;
+      color: #000;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #e6c200;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .info {
+      background-color: #fff3cd;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      border-left: 5px solid #ffeeba;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<img src="logo.png" alt="Logo" style="width: 100%;">
+
+<!-- LOGIN DE ACESSO  -->
+<div class="container" id="loginContainer">
+  <h2>Login</h2>
+  <label for="usuario">Usuário:</label>
+  <input type="text" id="usuario" required>
+  <label for="senha">Senha:</label>
+  <input type="password" id="senha" required>
+
+  <button onclick="login()">Entrar</button>
+  <div id="loginErro" class="info hidden">Usuário ou senha inválidos.</div>
+</div>
+
+<!-- Formulário de Benefício -->
+<div class="container hidden" id="formContainer">
+  <h2>CADASTRO DO CLIENTE</h2>
+  <div class="info">
+    <strong>ATENDENTE:</strong> <span id="usuarioLogado"></span><br>
+    <strong>Hora:</strong> <span id="horaEnvio"></span>
+    <p>POR FAVOR, PREENCHA AS INFORMAÇÕES ABAIXO PARA DARMOS INÍCIO AO ATENDIMENTO</p>
+  </div>
+
+  <!-- Formulário -->
+  <form id="beneficioForm" onsubmit="enviarFormulario(event)">
+    <label>NOME COMPLETO:</label>
+    <input type="text" name="nome" id="nome" required>
+    <label>CPF:</label>
+    <input type="text" name="cpf" id="cpf" required>
+    <label>Senha GOV:</label>
+    <input type="password" name="senha" id="senhaGov" required>
+    <label>Data de Nascimento:</label>
+    <input type="date" name="data_nascimento" id="data_nascimento" required>
+    <label>Email:</label>
+    <input type="email" name="email" id="email" required>
+    <label>Telefone:</label>
+    <input type="tel" name="telefone" id="telefone" required>
+    <label>RG:</label>
+    <input type="text" name="rg" id="rg" required>
+    <label>Endereço:</label>
+    <input type="text" name="endereco" id="endereco" required>
+    <label>Tipo de Benefício:</label>
+    <select name="tipo_beneficio" id="tipo_beneficio" required>
+      <option value="">Selecione...</option>
+      <option>APOSENTADORIA RURAL (PESCA E AGRICULTURA)</option>
+      <option>APOSENTADORIA POR TEMPO DE CONTRIBUIÇÃO</option>
+      <option>APOSENTADORIA POR IDADE</option>
+      <option>BPC IDOSO</option>
+      <option>BPC POR DEFICIENCIA</option>
+      <option>PENSÃO POR MORTE</option>
+      <option>SALARIO MATERNIDADE</option>
+      <option>AUXILIO POR INCAPACIDADE TEMPORARIA</option>
+      <option>AUXILIO POR INCAPACIDADE PERMANENTE</option>
+      <option>OUTROS</option>
+    </select>
+    <label>Descrição:</label>
+    <textarea name="descricao" rows="3" id="descricao" required></textarea>
+
+    <!-- BOTÕES -->
+    <div class="button-group">
+      <button type="submit">Enviar</button>
+      <button type="button" onclick="limparCampos()">Limpar Campos</button>
+      <button type="button" onclick="mostrarInfo()">Informações</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const usuarios = {
+    "usuario1": "senha1",
+    "usuario2": "senha2",
+    "usuario3": "senha3"
+  };
+
+  function login() {
+    const usuario = document.getElementById('usuario').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+
+    if (usuarios[usuario] && usuarios[usuario] === senha) {
+      document.getElementById('loginContainer').classList.add('hidden');
+      document.getElementById('formContainer').classList.remove('hidden');
+      document.getElementById('usuarioLogado').textContent = usuario;
+
+      const agora = new Date();
+      document.getElementById('horaEnvio').textContent = agora.toLocaleString();
+    } else {
+      document.getElementById('loginErro').classList.remove('hidden');
+    }
+  }
+
+  document.querySelector("#beneficioForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const dados = {
+      tipo: document.querySelector("#tipo_beneficio").value.trim(),
+      nome: document.querySelector("#nome").value.trim(),
+      cpf: document.querySelector("#cpf").value.trim(),
+      senhaGov: document.querySelector("#senhaGov").value.trim(),
+      data_nascimento: document.querySelector("#data_nascimento").value.trim(),
+      email: document.querySelector("#email").value.trim(),
+      telefone: document.querySelector("#telefone").value.trim(),
+      rg: document.querySelector("#rg").value.trim(),
+      endereco: document.querySelector("#endereco").value.trim(),
+      descricao: document.querySelector("#descricao").value.trim(),
+      atendente: document.getElementById("usuarioLogado").textContent,
+      data_envio: new Date().toLocaleString()
+    };
+
+    fetch("/api/cadastro", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "sucesso") {
+        alert("✅ Formulário enviado com sucesso!");
+        document.getElementById("beneficioForm").reset();
+        const agora = new Date();
+        document.getElementById('horaEnvio').textContent = agora.toLocaleString();
+      } else {
+        alert("❌ Erro ao enviar: " + data.mensagem);
+      }
+    })
+    .catch(error => {
+      console.error("❌ Erro ao salvar cadastro:", error);
+      alert("Erro de conexão com o servidor.");
+    });
+  });
+
+  function limparCampos() {
+    document.getElementById("beneficioForm").reset();
+    const agora = new Date();
+    document.getElementById('horaEnvio').textContent = agora.toLocaleString();
+  }
+
+  function mostrarInfo() {
+    alert("📞 SUPORTE: (91) 9 9999-9999\n👨‍💻 DESENVOLVIMENTO: Back Informática\n🌐 www.backinformatica.com.br");
+  }
+</script>
+
+</body>
+</html>
