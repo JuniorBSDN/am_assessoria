@@ -13,16 +13,23 @@ CORS(app)
 
 if not firebase_admin._apps:
     try:
-        firebase_json = os.environ.get("FIREBASE_CREDENTIALS")
-        if firebase_json:
-            cred_dict = json.loads(firebase_json)
+        firebase_json_str = os.environ.get("FIREBASE_CREDENTIALS")
+        private_key_str = os.environ.get("FIREBASE_PRIVATE_KEY")
+
+        if firebase_json_str and private_key_str:
+            cred_dict = json.loads(firebase_json_str)
+            # Re-adiciona a chave privada, corrigindo os caracteres de escape
+            cred_dict['private_key'] = private_key_str.replace('\\n', '\n')
+            
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
             print("✅ Firebase conectado com sucesso")
         else:
-            print("❌ A variável de ambiente FIREBASE_CREDENTIALS não está definida.")
+            print("❌ As variáveis de ambiente do Firebase não estão definidas corretamente.")
+            exit(1) # Impede a execução se as credenciais não forem encontradas
     except Exception as e:
         print("❌ Erro ao inicializar Firebase:", e)
+        exit(1) # Impede a execução se a inicialização falhar
 
 db = firestore.client()
 colecao = 'contatos'
@@ -48,8 +55,6 @@ def enviar_email_cadastro(dados_cadastro):
     --------------------
     """
     for key, value in dados_cadastro.items():
-        # A correção está aqui: firestore.SERVER_TIMESTAMP é um valor, não um tipo.
-        # Deve-se comparar com '==' em vez de usar isinstance().
         if key == 'dataEnvio' and value == firestore.SERVER_TIMESTAMP:
             body += f"{key}: (Definido pelo Servidor Firestore)\n"
         else:
